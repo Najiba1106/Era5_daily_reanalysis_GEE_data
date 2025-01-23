@@ -1,0 +1,197 @@
+// // Load the geographic boundary
+
+
+////////////Temperature2M////////////////////////////
+// var geometry = ee.FeatureCollection("users/rashidna/Puget_Sound");
+
+// // Load the ECMWF ERA5-LAND dataset
+// var dataset = ee.ImageCollection('ECMWF/ERA5_LAND/DAILY_AGGR')
+//                 .filterDate('2022-06-01', '2022-08-31') // Specify the time range
+//                 .select('temperature_2m')
+//                 .filterBounds(geometry); // Filter the dataset to the specified geography
+// print(dataset)
+// // Convert Kelvin to Celsius for max and min temperature calculations
+// var maxTempImage = dataset.max().subtract(273.15).clip(geometry); // Max temperature in Celsius
+// var minTempImage = dataset.min().subtract(273.15).clip(geometry); // Min temperature in Celsius
+
+// // Visualization parameters for Celsius
+// var visualization = {
+//   min: -20, // Adjust based on expected temperature range
+//   max: 50,
+//   palette: [
+//     '000080', '0000d9', '4000ff', '8000ff', '0080ff', '00ffff',
+//     '00ff80', '80ff00', 'daff00', 'ffff00', 'fff500', 'ffda00',
+//     'ffb000', 'ffa400', 'ff4f00', 'ff2500', 'ff0a00', 'ff00ff',
+//   ]
+// };
+
+// // Add max and min temperature layers to the map
+// Map.centerObject(geometry, 8); // Center on the region
+// Map.addLayer(maxTempImage, visualization, 'Max Temperature (°C)');
+// Map.addLayer(minTempImage, visualization, 'Min Temperature (°C)');
+
+// // Calculate daily maximum and minimum temperatures for the chart
+// var dailyStats = dataset.map(function(image) {
+//   var maxTemp = image.reduceRegion({
+//     reducer: ee.Reducer.max(),
+//     geometry: geometry,
+//     scale: 1000
+//   }).get('temperature_2m');
+  
+//   var minTemp = image.reduceRegion({
+//     reducer: ee.Reducer.min(),
+//     geometry: geometry,
+//   scale: 1000
+//}).get('temperature_2m');
+  
+//   return image.set({
+//     'date': image.date().format('YYYY-MM-dd'),
+//     'max_temperature': ee.Number(maxTemp).subtract(273.15), // Convert to Celsius
+//     'min_temperature': ee.Number(minTemp).subtract(273.15)  // Convert to Celsius
+//   });
+// });
+
+// // Convert to a FeatureCollection for charting
+// var dailyTemperatureFC = dailyStats.map(function(image) {
+//   return ee.Feature(null, {
+//     'date': image.get('date'),
+//     'max_temperature': image.get('max_temperature'),
+//     'min_temperature': image.get('min_temperature')
+//   });
+// });
+
+// // Generate a chart
+// var chart = ui.Chart.feature.byFeature({
+//   features: dailyTemperatureFC,
+//   xProperty: 'date',
+//   yProperties: ['max_temperature', 'min_temperature']
+// })
+// .setChartType('LineChart')
+// .setOptions({
+//   title: 'Daily Max and Min Temperatures (°C) in Puget Sound',
+//   hAxis: { title: 'Date' },
+//   vAxis: { title: 'Temperature (°C)' },
+//   series: {
+//     0: { label: 'Max Temperature', lineWidth: 2, pointSize: 4 },
+//     1: { label: 'Min Temperature', lineWidth: 2, pointSize: 4 }
+//   }
+// });
+
+// // Display the chart in the console
+// print(chart);
+
+// // Calculate and print overall maximum and minimum temperatures
+// var overallMaxTemp = maxTempImage.reduceRegion({
+//   reducer: ee.Reducer.max(),
+//   geometry: geometry,
+//   scale: 1000
+// }).get('temperature_2m');
+
+// var overallMinTemp = minTempImage.reduceRegion({
+//   reducer: ee.Reducer.min(),
+//   geometry: geometry,
+//   scale: 1000
+// }).get('temperature_2m');
+
+// print('Overall Maximum Temperature (°C):', overallMaxTemp);
+// print('Overall Minimum Temperature (°C):', overallMinTemp);
+
+
+
+
+///////////////////////////////SKIN_TEMPERATRE//////////////////////////
+// Load the geographic boundary
+var geometry = ee.FeatureCollection("users/rashidna/Puget_Sound");
+
+// Load the ECMWF ERA5-LAND dataset and select the "skin_temperature" band
+var dataset = ee.ImageCollection('ECMWF/ERA5_LAND/DAILY_AGGR')
+                .filterDate('2022-06-01', '2022-08-31') // Specify the time range
+                .select('skin_temperature')
+                .filterBounds(geometry); // Filter the dataset to the specified geography
+
+// Convert Kelvin to Celsius for max and min temperature calculations
+var maxTempImage = dataset.max().subtract(273.15).clip(geometry); // Max temperature in Celsius
+var minTempImage = dataset.min().subtract(273.15).clip(geometry); // Min temperature in Celsius
+
+// Visualization parameters for Celsius
+var visualization = {
+  min: -20, // Adjust based on expected temperature range
+  max: 50,
+  palette: [
+    '000080', '0000d9', '4000ff', '8000ff', '0080ff', '00ffff',
+    '00ff80', '80ff00', 'daff00', 'ffff00', 'fff500', 'ffda00',
+    'ffb000', 'ffa400', 'ff4f00', 'ff2500', 'ff0a00', 'ff00ff',
+  ]
+};
+
+// Add max and min temperature layers to the map
+Map.centerObject(geometry, 8); // Center on the region
+Map.addLayer(maxTempImage, visualization, 'Max Skin Temperature (°C)');
+Map.addLayer(minTempImage, visualization, 'Min Skin Temperature (°C)');
+
+// Calculate daily maximum and minimum skin temperatures for the chart
+var dailyStats = dataset.map(function(image) {
+  var maxTemp = image.reduceRegion({
+    reducer: ee.Reducer.max(),
+    geometry: geometry,
+    scale: 1000
+  }).get('skin_temperature');
+  
+  var minTemp = image.reduceRegion({
+    reducer: ee.Reducer.min(),
+    geometry: geometry,
+    scale: 1000
+  }).get('skin_temperature');
+  
+  return image.set({
+    'date': image.date().format('YYYY-MM-dd'),
+    'max_temperature': ee.Number(maxTemp).subtract(273.15), // Convert to Celsius
+    'min_temperature': ee.Number(minTemp).subtract(273.15)  // Convert to Celsius
+  });
+});
+
+// Convert to a FeatureCollection for charting
+var dailyTemperatureFC = dailyStats.map(function(image) {
+  return ee.Feature(null, {
+    'date': image.get('date'),
+    'max_temperature': image.get('max_temperature'),
+    'min_temperature': image.get('min_temperature')
+  });
+});
+
+// Generate a chart
+var chart = ui.Chart.feature.byFeature({
+  features: dailyTemperatureFC,
+  xProperty: 'date',
+  yProperties: ['max_temperature', 'min_temperature']
+})
+.setChartType('LineChart')
+.setOptions({
+  title: 'Daily Max and Min Skin Temperatures (°C) in Puget Sound',
+  hAxis: { title: 'Date' },
+  vAxis: { title: 'Temperature (°C)' },
+  series: {
+    0: { label: 'Max Skin Temperature', lineWidth: 2, pointSize: 4 },
+    1: { label: 'Min Skin Temperature', lineWidth: 2, pointSize: 4 }
+  }
+});
+
+// Display the chart in the console
+print(chart);
+
+// Calculate and print overall maximum and minimum skin temperatures
+var overallMaxTemp = maxTempImage.reduceRegion({
+  reducer: ee.Reducer.max(),
+  geometry: geometry,
+  scale: 1000
+}).get('skin_temperature');
+
+var overallMinTemp = minTempImage.reduceRegion({
+  reducer: ee.Reducer.min(),
+  geometry: geometry,
+  scale: 1000
+}).get('skin_temperature');
+
+print('Overall Maximum Skin Temperature (°C):', overallMaxTemp);
+print('Overall Minimum Skin Temperature (°C):', overallMinTemp);
+
